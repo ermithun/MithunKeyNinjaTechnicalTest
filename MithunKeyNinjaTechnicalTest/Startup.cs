@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MithunKeyNinjaTechnicalTest.DbConnection;
+using Microsoft.EntityFrameworkCore;
 
 namespace MithunKeyNinjaTechnicalTest
 {
@@ -22,12 +24,22 @@ namespace MithunKeyNinjaTechnicalTest
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<Context>(options =>
+               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                //var context = serviceScope.ServiceProvider.GetRequiredService<Context>();
+                //context.Database.EnsureCreated();
+
+                SeedData.Initialize(app);
+            }
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
