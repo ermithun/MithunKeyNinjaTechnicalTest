@@ -32,7 +32,7 @@ export class RiderReviewList extends React.Component<RouteComponentProps<{}>, Ri
 
 
     private renderRiderReviewList(riders: RiderReview[]) {
-        return <table className='table'>
+        return <table className='table table-resposive'>
             <thead>
                 <tr>
                     <th>FIRST NAME</th>
@@ -42,7 +42,7 @@ export class RiderReviewList extends React.Component<RouteComponentProps<{}>, Ri
                     <th>START DATE</th>
                     <th>AVERAGE REVIEW</th>
                     <th>BEST REVIEW</th>
-                    <th>COMMENT</th>
+                    <th>BEST COMMENT</th>
                 </tr>
             </thead>
             <tbody>
