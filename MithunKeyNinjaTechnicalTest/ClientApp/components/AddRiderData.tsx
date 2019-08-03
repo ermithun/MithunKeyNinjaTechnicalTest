@@ -55,7 +55,6 @@ export class AddRiderData extends React.Component<RouteComponentProps<{}>, AddRi
     private handleSave(event) {
         event.preventDefault();
         const data = new FormData(event.target);
-       // const d = new Rider{id = }
 
         // PUT request for Edit Rider.  
         if (this.state.riderData.id) {

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using MithunKeyNinjaTechnicalTest.Models;
 using MithunKeyNinjaTechnicalTest.DbConnection;
 using MithunKeyNinjaTechnicalTest.Helper;
+using MithunKeyNinjaTechnicalTest.ViewModels;
 
 namespace MithunKeyNinjaTechnicalTest.Controllers
 {
@@ -18,30 +19,49 @@ namespace MithunKeyNinjaTechnicalTest.Controllers
         [HttpGet]
         [Route("[action]")]
         public IEnumerable<Rider> List()
-        { 
+        {
             return dll.GetModelList<Rider>().ToList();
         }
 
         // GET: 
         [HttpGet]
         [Route("[action]")]
-        public IEnumerable<Rider> AverageRiderReview() 
+        public IEnumerable<RiderReview> RiderReview()
         {
-            //var model= from c in dll.GetModelList<Rider>()
-            //           join d in dll.GetModelList<Jobs>() on c.Id.Equals(d.RiderId)
-            //           select new 
+            var riderScores =
+                from rider in dll.GetModelList<Jobs>()
+                group rider by rider.Rider into riderGroup
+                select new
+                {
+                    RiderId = riderGroup.FirstOrDefault().RiderId,
+                    AverageScore = riderGroup.Average(x => x.ReviewScore),
+                    BestReviewScore = riderGroup.Max(x => x.ReviewScore),
+                    BestReviewComment = riderGroup.Where(x => x.ReviewScore == riderGroup.Max(xy => xy.ReviewScore)).FirstOrDefault().ReviewComment
+                };
+            var query = from rider in dll.GetModelList<Rider>()
+                        join score in riderScores
+                             on rider.Id equals score.RiderId
+                        select new RiderReview
+                        {
+                            FirstName = rider.FirstName,
+                            LastName = rider.LastName,
+                            PhoneNumber = rider.PhoneNumber,
+                            Email = rider.Email,
+                            StartDate = rider.StartDate,
+                            AverageReviewScore = score.AverageScore,
+                            BestReviewScore = score.BestReviewScore,
+                            BestReviewComments = score.BestReviewComment
+                        };
 
-
-
-            return dll.GetModelList<Rider>().ToList();
+            return query;
         }
 
         // GET 
         [HttpGet]
         [Route("[action]")]
-        public Rider  Edit(int Id)
+        public Rider Edit(int Id)
         {
-            return dll.GetModelList<Rider>().Where(a=>a.Id==Id).FirstOrDefault(); 
+            return dll.GetModelList<Rider>().Where(a => a.Id == Id).FirstOrDefault();
         }
 
         // Create Rider
@@ -78,17 +98,17 @@ namespace MithunKeyNinjaTechnicalTest.Controllers
             AppResult result = new AppResult();
             try
             {
-                    result =  dll.Update<Rider>(model);
-                    if (result.ResultType == ResultType.Success || result.ResultType == ResultType.Failed)
-                    {
-                        return Json(result);
-                    }
-                    else
-                    {
-                        result = new AppResult { ResultType = ResultType.Failed, Message = "Something wrong with the system. please contact to vendor." };
-                        return Json(result);
-                    }
-               
+                result = dll.Update<Rider>(model);
+                if (result.ResultType == ResultType.Success || result.ResultType == ResultType.Failed)
+                {
+                    return Json(result);
+                }
+                else
+                {
+                    result = new AppResult { ResultType = ResultType.Failed, Message = "Something wrong with the system. please contact to vendor." };
+                    return Json(result);
+                }
+
             }
             catch (Exception ex)
             {
@@ -106,7 +126,7 @@ namespace MithunKeyNinjaTechnicalTest.Controllers
             try
             {
                 Rider model = dll.GetModelList<Rider>().Where(a => a.Id == id).FirstOrDefault();
-                result =dll.Delete<Rider>(model);
+                result = dll.Delete<Rider>(model);
                 if (result.ResultType == ResultType.Success || result.ResultType == ResultType.Failed)
                 {
                     return Json(result);

@@ -1,7 +1,6 @@
 ﻿import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link, NavLink, BrowserRouter as Router, Route } from 'react-router-dom';
-
 import { AddRiderData } from './AddRiderData';
 
 interface RiderState {
@@ -21,8 +20,19 @@ export class RiderList extends React.Component<RouteComponentProps<{}>, RiderSta
 
         this.handleDelete = this.handleDelete.bind(this);
         this.handleEdit = this.handleEdit.bind(this);
+        this.componentDidUpdate = this.componentDidUpdate.bind(this);
     }
 
+    componentDidUpdate(preProps, preStates) {
+        console.log("preprops", preProps);
+        console.log("prestates", preStates);
+        fetch('api/Rider/List')
+            .then(response => response.json() as Promise<Rider[]>)
+            .then(data => {
+                this.setState({ riders: data, loading: false });
+            });
+        //console.log(this.props.state.counters);
+    }
    
 
     public render() {

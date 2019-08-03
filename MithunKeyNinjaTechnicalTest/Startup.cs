@@ -35,9 +35,7 @@ namespace MithunKeyNinjaTechnicalTest
         {
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
-                //var context = serviceScope.ServiceProvider.GetRequiredService<Context>();
-                //context.Database.EnsureCreated();
-
+                // Initializing seed data 
                 SeedData.Initialize(app);
             }
             if (env.IsDevelopment())

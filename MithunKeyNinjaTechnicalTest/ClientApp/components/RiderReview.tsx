@@ -4,36 +4,34 @@ import { Link, NavLink, BrowserRouter as Router, Route } from 'react-router-dom'
 
 
 interface RiderState {
-    riders: AverageRiderReview[];
+    riders: RiderReview[];
     loading: boolean;
 }
 
-export class AverageRiderReviewList extends React.Component<RouteComponentProps<{}>, RiderState> {
+export class RiderReviewList extends React.Component<RouteComponentProps<{}>, RiderState> {
     constructor(props) {
         super(props);
         this.state = { riders: [], loading: true };
-        fetch('api/Rider/AverageReview')
-            .then(response => response.json() as Promise<AverageRiderReview[]>)
+        fetch('api/Rider/RiderReview')
+            .then(response => response.json() as Promise<RiderReview[]>)
             .then(data => {
                 this.setState({ riders: data, loading: false });
             });
     }
 
-
-
     public render() {
         let contents = this.state.loading
             ? <p><em>Loading...</em></p>
-            : this.renderRiderList(this.state.riders);
+            : this.renderRiderReviewList(this.state.riders);
 
         return <div>
-            <h1>Rider</h1>
+            <h1>Rider Review</h1>
             {contents}
         </div>;
     }
 
 
-    private renderRiderList(riders: AverageRiderReview[]) {
+    private renderRiderReviewList(riders: RiderReview[]) {
         return <table className='table'>
             <thead>
                 <tr>
@@ -43,6 +41,8 @@ export class AverageRiderReviewList extends React.Component<RouteComponentProps<
                     <th>EMAIL </th>
                     <th>START DATE</th>
                     <th>AVERAGE REVIEW</th>
+                    <th>BEST REVIEW</th>
+                    <th>COMMENT</th>
                 </tr>
             </thead>
             <tbody>
@@ -53,7 +53,9 @@ export class AverageRiderReviewList extends React.Component<RouteComponentProps<
                         <td>{x.phoneNumber}</td>
                         <td>{x.email}</td>
                         <td>{x.startDate}</td>
-                        <td>{}</td>
+                        <td>{x.averageReviewScore}</td>
+                        <td>{x.bestReviewScore}</td>
+                        <td>{x.bestReviewComments}</td>
                     </tr>
                 )}
             </tbody>
@@ -61,11 +63,13 @@ export class AverageRiderReviewList extends React.Component<RouteComponentProps<
     }
 }
 
-export class AverageRiderReview {
+export class RiderReview {
     firstName: string = "";
     lastName: string = "";
     phoneNumber: string = "";
     email: string = "";
     startDate: string = "";
-    averageReview:number=0;
+    averageReviewScore: number = 0;
+    bestReviewScore: number = 0;
+    bestReviewComments: string = "";
 }
